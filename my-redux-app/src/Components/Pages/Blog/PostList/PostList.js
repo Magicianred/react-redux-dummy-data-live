@@ -1,46 +1,83 @@
-import React, { Fragment, useCallback, useEffect } from 'react';
+import React, { Fragment, useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import isArray from 'lodash/isArray';
 import noop from 'lodash/noop';
 import { Link,useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { fetchPosts } from './../../../../services/slices/posts';
-// import { fetchCategories } from './../../../../services/slices/categories';
+import PostsService from './../../../../services/PostsService';
+import { setLoading, fetchPosts } from './../../../../redux/slices/posts';
+// import { fetchCategories } from './../../../../redux/slices/categories';
 import { PostPropType } from '../../../../PropTypes/Post';
 
 const PostList = () => {
     const history = useHistory();
     const match = useRouteMatch();
+    
+    // const [loading, setLoading] = useState(false);
 
-    const isLoading = useSelector((state) => {
-        console.log({state})
-        return state && state.posts ? state.posts.isLoading : false
-    });
-    const hasNextPage = useSelector((state) => state && state.posts ? state.posts.hasNextPage : false);
     const {
-        totalSize,
-        page,
-        pageSize,
-        result
-    } = useSelector((state) => state && state.posts && state.posts.data ? state.posts.data : { 
-        totalSize: 0,
-        page: 0,
-        pageSize: 0,
-        result: []
+        isLoading,
+        hasNextPage,
+        query,
+        data: {
+            totalSize,
+            page,
+            pageSize,
+            result
+        }
+    } = useSelector((state) => {
+        console.log('useSelector',{state})
+        const newState = state && state.posts ? state.posts : {
+            isLoading: false,
+            hasNextPage: false,
+            query: undefined,
+            data: {
+                totalSize: 0,
+                page: 1,
+                pageSize: 3,
+                result: []
+            }
+        }
+        console.log({newState})
+        return newState;
     });
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const action = { 
+        let payload = { 
             page: 1, 
             pageSize: 3,
-            sort: 'title',
-            order: 'desc',
-            query: ''
+            // sort: 'title',
+            // order: 'desc',
+            // query: '',
+            hasNextPage: false,
         };
-        // dispatch(fetchPosts(action));
-        dispatch(fetchPosts(action));
+        dispatch(setLoading(true));
+        const data = PostsService.getAllPosts()
+        if(data instanceof Promise) {
+            data.then((resp) => {
+                payload.data = { 
+                    totalSize: resp.length,
+                    page: 1,
+                    pageSize: resp.length,
+                    result: resp
+                  };;
+                dispatch(fetchPosts(payload));
+            })
+            .catch((err) => {
+                console.error('An error occurred', {err})
+            })
+        } else {
+            payload.data = { 
+                totalSize: data.length,
+                page: 1,
+                pageSize: data.length,
+                result: data
+              };
+            dispatch(fetchPosts(payload));
+        }
     }, [dispatch]);
 
     /**
