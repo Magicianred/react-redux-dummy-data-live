@@ -3,8 +3,8 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 // import createSagaMiddleware from 'redux-saga';
 // import rootSaga from './sagas';
 
-import { postsReducer } from './slices/posts';
-import { categoriesReducer } from './slices/categories';
+import postsReducer from './slices/posts';
+import categoriesReducer from './slices/categories';
 
 // const sagaMiddleware = createSagaMiddleware();
 const customizedMiddleware = getDefaultMiddleware({
@@ -13,8 +13,8 @@ const customizedMiddleware = getDefaultMiddleware({
 
 // // single reducer
 // const store = configureStore({
-//   // reducer: postsReducer,
-//   reducer: categoriesReducer,
+//   reducer: postsReducer,
+//   // reducer: categoriesReducer,
 //   middleware: customizedMiddleware
 //   // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(customizedMiddleware),
 // })
@@ -25,11 +25,11 @@ const rootReducer = combineReducers({
   categories: categoriesReducer
 });
 
-const store = createStore(rootReducer);
-// const store = configureStore({
-//   reducer: rootReducer,
-//   middleware: customizedMiddleware
-// });
+// const store = createStore(rootReducer);
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: customizedMiddleware
+});
 
 // sagaMiddleware.run(rootSaga);
 

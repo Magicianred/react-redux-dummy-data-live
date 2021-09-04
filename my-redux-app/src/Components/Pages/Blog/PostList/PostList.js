@@ -6,7 +6,7 @@ import { Link,useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { fetchPosts } from './../../../../services/slices/posts';
-import { fetchCategories } from './../../../../services/slices/categories';
+// import { fetchCategories } from './../../../../services/slices/categories';
 import { PostPropType } from '../../../../PropTypes/Post';
 
 const PostList = () => {
@@ -15,15 +15,15 @@ const PostList = () => {
 
     const isLoading = useSelector((state) => {
         console.log({state})
-        return state && state.reducer ? state.reducer.isLoading : false
+        return state && state.posts ? state.posts.isLoading : false
     });
-    const hasNextPage = useSelector((state) => state && state.reducer ? state.reducer.hasNextPage : false);
+    const hasNextPage = useSelector((state) => state && state.posts ? state.posts.hasNextPage : false);
     const {
         totalSize,
         page,
         pageSize,
         result
-    } = useSelector((state) => state && state.reducer && state.reducer.data ? state.reducer.data : { 
+    } = useSelector((state) => state && state.posts && state.posts.data ? state.posts.data : { 
         totalSize: 0,
         page: 0,
         pageSize: 0,
@@ -40,7 +40,7 @@ const PostList = () => {
             query: ''
         };
         // dispatch(fetchPosts(action));
-        dispatch(fetchCategories(action));
+        dispatch(fetchPosts(action));
     }, [dispatch]);
 
     /**

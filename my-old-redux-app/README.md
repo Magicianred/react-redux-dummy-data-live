@@ -1,4 +1,4 @@
-# react-redux-dummy-data-live
+# react-redux-dummy-data-live (old style)
 An experimentation of active dummy data in react and redux. This is useful for test components in isolation.
 
 ## Install npm packages

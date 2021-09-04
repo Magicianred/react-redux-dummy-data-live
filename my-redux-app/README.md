@@ -114,7 +114,7 @@ no required (see slice)
 
 no required (see slice)
 
-## using Slice
+## using Slice for each entity
 
 Redux Toolkit provides an API called createSlice. Which handles the initial state, automatically creates action types and creators. And no more switch cases. We are also not required to write action types and creators manually. Check the below code for the new slice reducer
 
@@ -194,6 +194,8 @@ ReactDOM.render(
 
 ### add Slice to Store
 
+#### single slice
+
 in your file store
 
 ```javascript
@@ -207,14 +209,36 @@ export default configureStore({
 })
 ```
 
+#### multiple slices
+
+in your file store
+
+```javascript
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
+
+import postsReducer from './slices/posts';
+import categoriesReducer from './slices/categories';
+
+const rootReducer = combineReducers({
+  posts: postsReducer,
+  categories: categoriesReducer
+});
+
+const store = configureStore({
+  reducer: rootReducer,
+});
+
+export default store;
+```
+
 
 ## using redux in your component throw Hooks
-
 
 ```javascript
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { decrement, increment } from './counterSlice'
+import { decrement, increment } from './counterSlice' // actions
 import styles from './Counter.module.css'
 
 export function Counter() {
