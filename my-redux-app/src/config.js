@@ -1,4 +1,4 @@
-export const USE_DUMMY_DATA = false;
+export const USE_DUMMY_DATA = true;
   
 // eslint-disable-next-line import/prefer-default-export
 export const constants = {

@@ -1,23 +1,30 @@
-import React, { Fragment, useCallback, useState, useEffect } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import isArray from 'lodash/isArray';
 import noop from 'lodash/noop';
-import { Link,useHistory, useRouteMatch } from 'react-router-dom';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import PostsService from './../../../../services/PostsService';
-import { setLoading, fetchPosts } from './../../../../redux/slices/posts';
+import { enableLoading, disableLoading } from './../../../../redux/slices/loader';
+import { setLoading, savePosts, clearPosts } from './../../../../redux/slices/posts';
 // import { fetchCategories } from './../../../../redux/slices/categories';
 import { PostPropType } from '../../../../PropTypes/Post';
 
 const PostList = () => {
     const history = useHistory();
     const match = useRouteMatch();
+
+    const dispatch = useDispatch();
     
-    // const [loading, setLoading] = useState(false);
+    const isLoading = useSelector((state) => {
+        console.log('useSelector',{state})
+        const loading = state && state.loader ? state.loader.isLoading : false;
+        return loading;
+    });
 
     const {
-        isLoading,
+        // isLoading,
         hasNextPage,
         query,
         data: {
@@ -29,7 +36,7 @@ const PostList = () => {
     } = useSelector((state) => {
         console.log('useSelector',{state})
         const newState = state && state.posts ? state.posts : {
-            isLoading: false,
+            // isLoading: false,
             hasNextPage: false,
             query: undefined,
             data: {
@@ -43,8 +50,6 @@ const PostList = () => {
         return newState;
     });
 
-    const dispatch = useDispatch();
-
     useEffect(() => {
         let payload = { 
             page: 1, 
@@ -54,8 +59,10 @@ const PostList = () => {
             // query: '',
             hasNextPage: false,
         };
+        dispatch(enableLoading());
         dispatch(setLoading(true));
-        const data = PostsService.getAllPosts()
+        dispatch(clearPosts());
+        const data = PostsService.getAllPosts(page, pageSize)
         if(data instanceof Promise) {
             data.then((resp) => {
                 payload.data = { 
@@ -63,11 +70,13 @@ const PostList = () => {
                     page: 1,
                     pageSize: resp.length,
                     result: resp
-                  };;
-                dispatch(fetchPosts(payload));
+                  };
+                dispatch(disableLoading());
+                dispatch(savePosts(payload));
             })
             .catch((err) => {
-                console.error('An error occurred', {err})
+                dispatch(clearPosts());
+                console.error('An error occurred: ', {err})
             })
         } else {
             payload.data = { 
@@ -76,7 +85,8 @@ const PostList = () => {
                 pageSize: data.length,
                 result: data
               };
-            dispatch(fetchPosts(payload));
+            dispatch(disableLoading());
+            dispatch(savePosts(payload));
         }
     }, [dispatch]);
 
@@ -91,7 +101,7 @@ const PostList = () => {
         <Fragment>
             {isLoading && (<div>isLoading...</div>)}
             {!isLoading && result && isArray(result) ? 
-                result.map((item, index) => (
+                result.map((item, index) => item && (
                     <div key={index}>
                         <h2>{item.title}</h2>
                         <p>{item.description}</p>

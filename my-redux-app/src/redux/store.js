@@ -3,6 +3,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 // import createSagaMiddleware from 'redux-saga';
 // import rootSaga from './sagas';
 
+import loaderReducer from './slices/loader';
 import postsReducer from './slices/posts';
 import categoriesReducer from './slices/categories';
 
@@ -21,6 +22,7 @@ const customizedMiddleware = getDefaultMiddleware({
 
 // multiple reducers
 const rootReducer = combineReducers({
+  loader: loaderReducer,
   posts: postsReducer,
   categories: categoriesReducer
 });
