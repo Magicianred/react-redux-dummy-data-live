@@ -1,11 +1,12 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import reduxLogger from 'redux-logger';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
+
+import rootReducer from './rootReducer';
+
 // import createSagaMiddleware from 'redux-saga';
 // import rootSaga from './sagas';
 
-import loaderReducer from './slices/loader';
-import postsReducer from './slices/posts';
-import categoriesReducer from './slices/categories';
 
 // const sagaMiddleware = createSagaMiddleware();
 const customizedMiddleware = getDefaultMiddleware({
@@ -20,17 +21,10 @@ const customizedMiddleware = getDefaultMiddleware({
 //   // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(customizedMiddleware),
 // })
 
-// multiple reducers
-const rootReducer = combineReducers({
-  loader: loaderReducer,
-  posts: postsReducer,
-  categories: categoriesReducer
-});
-
 // const store = createStore(rootReducer);
 const store = configureStore({
   reducer: rootReducer,
-  middleware: customizedMiddleware
+  middleware: [...customizedMiddleware, reduxLogger]
 });
 
 // sagaMiddleware.run(rootSaga);

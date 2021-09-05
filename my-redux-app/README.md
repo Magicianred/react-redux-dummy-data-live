@@ -110,9 +110,21 @@ no required (see slice)
 
 no required (see slice)
 
-## Create a rootReducer
+## Create a rootReducer (optional)
 
-no required (see slice)
+```javascript
+import { combineReducers } from 'redux';
+
+import counterReducer from '../features/counter/counterSlice'
+
+
+// multiple reducers
+const rootReducer = combineReducers({
+    counter: counterReducer
+  });
+
+export default rootReducer;
+```
 
 ## using Slice for each entity
 
@@ -159,7 +171,6 @@ create a store to include reducers
 
 ```javascript
 import { configureStore } from '@reduxjs/toolkit'
-import counterReducer from '../features/counter/counterSlice'
 
 export default configureStore({
   reducer: {
@@ -268,6 +279,27 @@ export function Counter() {
 ```
 
 
+## using redux-logger
+
+### install npm
+
+```cmd
+npm install redux-logger
+```
+
+### configure store
+
+```javascript
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import reduxLogger from 'redux-logger';
+
+export default configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+  middleware: [...getDefaultMiddleware, reduxLogger]
+})
+```
 ## references
 
 https://react-redux.js.org/introduction/getting-started
