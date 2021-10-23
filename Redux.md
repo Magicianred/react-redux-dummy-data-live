@@ -246,6 +246,77 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps) (App);
 ```
 
+## Middleware
+
+### Redux Thunk
+
+add applyMiddleware, import thunk
+
+```javascript
+import { applyMiddleware, createStore } from 'redux'
+import { Provider } from 'react-redux';
+import todoApp from './reducers';
+import thunk from 'redux-thunk';
+
+const store = createStore(todoApp, applyMiddleware(thunk));
+
+// base Provider, to access Redux from App and his childs
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
+```
+
+add async action
+
+```javascript
+
+export const asyncAddTodo = ({ title, description }) => {
+  return (dispatch) => {
+    setLoading(true)
+    TodosService.getAll()
+      .then((resp) => {
+        setLoading(false)
+        if (resp) {
+          const newTodos = [...todos, ...resp]
+          dispatch(addTodo(newTodos));
+        }
+      })
+      .catch((err) => {
+        setLoading(false)
+        setHasError(err)
+      });
+  }
+}
+
+export const addTodo = ({ title, description }) => {
+  return {
+    type: TODOS_ACTIONS.ADD,
+    title,
+    description
+  }
+}
+```
+
+add async action in Container Component
+
+```javascript
+import { connect } from 'react-redux';
+import { asyncAddTodo } from './todos-duck';
+import AddTodo from './AddTodo';
+
+const mapStateToProps = (state) => {(
+  theme: state.theme,
+)};
+
+const mapDispatchToProps = (dispatch) => ({
+  createTodo: ({ title, description }) => dispatch(asyncAddTodo({ title, description }));
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddTodo);
+```
 
 
 
